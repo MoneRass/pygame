@@ -7,9 +7,9 @@ pygame.display.set_caption('This is very very fun game')
 
 #play button
 play_image = pygame.image.load('images/Icons_14.png').convert_alpha()
-scoreboard_image = pygame.image.load('images/Icons_14.png').convert_alpha()
+score_image = pygame.image.load('images/Icons_14.png').convert_alpha()
 quit_image = pygame.image.load('images/Icons_14.png').convert_alpha()
-
+back_image = pygame.image.load('images/Icons_14.png').convert_alpha()
 #game name
 fonts = pygame.font.Font('font/Liquefy.otf', 70)
 game_name = fonts.render('Game name', True,(255,255,255))
@@ -49,5 +49,8 @@ class Button():
 
 
 play_button = Button(screen_width/2,200,play_image, 1.5)
-quit_button = Button(screen_width/2,400,quit_image,1.5)
+score_button = Button(screen_width/2,400,score_image, 1.5)
+quit_button = Button(screen_width/2,600,quit_image,1.5)
+
+back_button = Button(1000,200,back_image, 1.5)
 

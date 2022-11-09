@@ -1,14 +1,16 @@
 from turtle import position
 import pygame
 from Tile import Tiles,StaticTile
-from Hunter import Hunter
+from Hunter import Hunter,hp
 from map import tile_size, screen_width
 from boss import Boss
 from flyingEnemie import Flying_Bat
-
+from item_box import ItemBox
+from game_ui import Stamina_bar
 import random
 
 spawn_index=0
+
 
 class Level:
         def __init__(self, level_data, surface):
@@ -17,13 +19,21 @@ class Level:
             self.setup_level(level_data)
 
             self.world_shift = 0
+           
             self.bat_shift = 0
             self.spawn_index=0
-
+            self.hit=False
             self.num_skull=0
+
+            self.hp=100
+            self.speed_buff=0
+            self.jump_buff=0
+
+            
 
         def setup_level(self, layout):
             self.Tile = pygame.sprite.Group()
+            self.item = pygame.sprite.Group()
             self.hunter = pygame.sprite.GroupSingle()
             self.boss = pygame.sprite.GroupSingle()
             self.bat = pygame.sprite.Group()
@@ -53,9 +63,16 @@ class Level:
                         
                         self.Tile.add(tile)
 
+                    if cell == 'T':
+                        item_skin=pygame.image.load('images/Icons_14.png').convert_alpha()
+                        item_skin=pygame.transform.scale(item_skin, (tile_size,tile_size))
+                        item = ItemBox((x,y), tile_size,item_skin)
+                        
+                        self.item.add(item)
+
                     if cell == 'P':
-                        hunter_sprite = Hunter((x, y))
-                        self.hunter.add(hunter_sprite)
+                        self.hunter_sprite = Hunter((x, y))
+                        self.hunter.add(self.hunter_sprite)
                     if cell == 'B':
                         boss_sprite = Boss((x, y))
                         self.boss.add(boss_sprite)
@@ -63,34 +80,33 @@ class Level:
                     if cell == 'Z':
                         bat_surface=pygame.image.load('images/skull.png').convert_alpha()
                         bat_surface=pygame.transform.scale(bat_surface, (30,30))
-                        bat_sprite = Flying_Bat((x, y), bat_surface)
-                        self.bat.add(bat_sprite)
+                        self.bat_sprite = Flying_Bat((x, y), bat_surface)
+                        self.bat.add(self.bat_sprite)
         
         def spawn_skull(self):
-            
+            hunter = self.hunter.sprite
             self.spawn_rate=0.4
             
-            self.max_skull=7
+            self.max_skull=15
             positionY= random.randint(3,13)
             bat_surface=pygame.image.load('images/skull.png').convert_alpha()
             bat_surface=pygame.transform.scale(bat_surface, (30,30))
             self.spawn_index+=0.4
             
-            bat_sprite = Flying_Bat((1280, positionY*60), bat_surface)
-            
+            self.bat_sprite = Flying_Bat((1280, positionY*60), bat_surface)
+        
             if self.spawn_index>=100 and self.num_skull<=self.max_skull:
-                self.bat.add(bat_sprite)
+                self.bat.add(self.bat_sprite)
                 self.num_skull+=1
                 print('skull : ',self.num_skull)
                 self.spawn_index=0
 
-            for i in self.num_skull:
-                self.bat.add(bat_sprite)
-                self.num_skull+=1
-                print('skull : ',self.num_skull)
-                self.spawn_index=0
-                
-           
+            for sprites in self.bat.sprites():
+                if sprites.rect.colliderect(hunter.rect):
+                    self.hunter_sprite.damage()
+                    self.bat_sprite.bat_hit()
+                    
+        
         def camera_x(self):
             hunter = self.hunter.sprite
             hunter_x = hunter.rect.centerx
@@ -118,6 +134,7 @@ class Level:
 
             if hunter_y < screen_width / 4 and direction_y < 0:
                 self.world_shift = 8
+                
                 self.bat_shift = 8
                 hunter.speed = 0
             elif hunter_y > screen_width - (screen_width / 4) and direction_y > 0:
@@ -136,22 +153,30 @@ class Level:
             #self.camera_y()
             self.hunter.update()
             self.hunter.draw(self.display_surface)
+            
             self.horizontal_collision()
             self.vertical_collision()
+            #self.get_damage()
 
             self.boss.draw(self.display_surface)
             self.bat.draw(self.display_surface)
+            self.item.draw(self.display_surface)
 
-            self.bat.update(self.bat_shift)
-            self.bat_collide()
+            self.bat.update(self.bat_shift,self.hit)
+            
+           
 
             self.spawn_skull()
 
+            self.item.update(self.world_shift)
+            self.chest_collide()
+
+            self.UI()
 
         def horizontal_collision(self):
             hunter = self.hunter.sprite
             hunter.rect.x += hunter.direction.x * hunter.speed
-
+            
             for sprite in self.Tile.sprites():
                 if sprite.rect.colliderect(hunter.rect):
                     
@@ -160,26 +185,40 @@ class Level:
                     elif hunter.direction.x > 0:#-
                         hunter.rect.right = sprite.rect.left
 
+        def chest_collide(self):
+            hunter = self.hunter.sprite
+            
+            for item in self.item.sprites():
+                if item.rect.colliderect(hunter.rect):
+                    random_item=random.randint(1,3)
+                    self.hp+=10
+                    
+        def UI(self):
+            stamina_bar = Stamina_bar(self.hunter_sprite.stamina, 100)          
+            stamina_bar.draw(self.hunter_sprite.stamina)
+                    
+               
+
         def vertical_collision(self):
             hunter = self.hunter.sprite
             hunter.gravity_on()
-
+            
             for sprite in self.Tile.sprites():
                 if sprite.rect.colliderect(hunter.rect):
                     if hunter.direction.y > 0:
                         hunter.rect.bottom = sprite.rect.top
                         hunter.ground = 1
-
+                        
                         hunter.direction.y = 0
                     elif hunter.direction.y < 0:
                         hunter.rect.top = sprite.rect.bottom
                         hunter.direction.y = 0
 
-        def bat_collide(self):
-            hunter = self.hunter.sprite
-
-            for sprites in self.bat.sprites():
-                if sprites.rect.colliderect(hunter.rect):
-                    print('hit')
+            
+                    
+                    
+                    
+                    
+                    
 
         

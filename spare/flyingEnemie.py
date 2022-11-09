@@ -18,19 +18,17 @@ class Flying_Bat(pygame.sprite.Sprite):
     def animation():
         pass
 #why u dont close the screennnnnnnnnnnnnnn
-    def update(self, bat_shift):
+    def update(self, bat_shift,hit):
         self.rect.x-=(self.speed+bat_shift)
-        self.rect.y+=math.sin(self.sinY)
+        #self.rect.y+=math.sin(self.sinY)
         if(self.rect.x<=0):
             self.rect.x=5000
             self.rect.y=random.randint(3,13)*60
-
-        #print(math.floor(math.sin(self.rect.x)))
+        if(hit==True):
+            self.rect.x=5000
+        
+        
        
-        self.sinY+=3.14/2
-
-    def create_bat(self):
-        return Flying_Bat()
-
+       
     
 

@@ -9,8 +9,8 @@ level_map = [
     '                                                                                    ',
     '                                        A    A                                   ',
     '                                                   X                                       ',
-    '                         XX                       XXX            XXXXXXXXX                        ',
-    '                      XXXXX       XXX            XXXX           XXXXXXXXXXXXXX           XXXXXXXXX            ',
+    '             T          XX                       XXX            XXXXXXXXX                        ',
+    '                        XXXXX       XXX            XXXX           XXXXXXXXXXXXXX           XXXXXXXXX            ',
     'XXXXXXXXXXXXXXXXXXXXXXXXXX       XXXXXXXXXXXXXXXXXXX          XXXXXXXXXXXXXX         XXXXXXXXXXXXSSSSSSSSSSSSSSSSSSSSSSSSSSSS']
 
 miniboss_map = [

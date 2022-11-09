@@ -1,6 +1,10 @@
 import pygame
 from extension import import_folder
 from map import *
+
+hp=''
+gg=''
+
 class Hunter(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
@@ -13,7 +17,6 @@ class Hunter(pygame.sprite.Sprite):
         self.startPos=(300,420)
         
         #self.rect.topleft = [pos_x,pos_y]
-       
         #Player Movement
         self.direction = pygame.math.Vector2(0, 0)
         self.speed = 7
@@ -27,7 +30,7 @@ class Hunter(pygame.sprite.Sprite):
         self.death = False
 
         #Stat
-        self.stats = {'health': 100,'stamina':60,'damage':10}
+        self.stats = {'health': 100,'stamina':100,'damage':10}
         self.health = self.stats['health']
         self.stamina = self.stats['stamina']
         
@@ -53,8 +56,9 @@ class Hunter(pygame.sprite.Sprite):
             self.animate('run')
         else:
             self.direction.x = 0
-        if key[pygame.K_SPACE] and (self.ground == 1):
+        if key[pygame.K_w] and (self.ground == 1) and (self.stamina>=0):
             self.moving = True
+            self.stamina-=10
             self.jump()
 
         if key[pygame.K_z]:
@@ -103,7 +107,10 @@ class Hunter(pygame.sprite.Sprite):
         if self.moving == False:
             self.animate('idle')
         
-    
+    def damage(self):
+        self.health-=10
+        self.rect.x-=20
+        
 
     def attack(self):
         self.atk=True
@@ -118,9 +125,16 @@ class Hunter(pygame.sprite.Sprite):
     def update(self):
         self.control()
         self.animation_state()
+        if self.health<=0:
+            self.alive=False
+            
+
+        if self.stamina<=100:
+            self.stamina+=0.05
 
     def location(self):
         locationX = self.rect.x
         return locationX
 
 Clock =  pygame.time.Clock()
+
