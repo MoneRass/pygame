@@ -1,0 +1,1 @@
+{"boy": 500, "bob": 200, "justin": 3000, "ping": 3000, "schememe": 5000}
