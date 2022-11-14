@@ -1,0 +1,1 @@
+{"ping": 500, "ff": 0, "Anonymous": 0, "f": 0}
